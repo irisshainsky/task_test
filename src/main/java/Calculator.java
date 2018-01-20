@@ -48,7 +48,7 @@ public class Calculator {
         try {
             threads.invokeAll(callables);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return resultsMatrix;
     }
