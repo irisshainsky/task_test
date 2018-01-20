@@ -13,11 +13,11 @@ public class TestCalculator {
 
     @Test
     public void testCalculator() {
-        List<Point> points = generatePoints(6);
+        List<Point> points = generatePoints(1000);
 
         Instant beforeFirst = Instant.now();
         Calculator calculator = new Calculator();
-        double[][] resultMatrix = calculator.calcDistances(points, 100);
+        double[][] resultMatrix = calculator.calcDistances(points, 10);
         int len = resultMatrix.length;
 
         Instant afterFirst = Instant.now();
