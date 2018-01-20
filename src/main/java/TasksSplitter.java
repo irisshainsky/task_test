@@ -5,6 +5,13 @@ import java.util.Queue;
 
 public class TasksSplitter {
 
+
+    /**
+     * splits the tasks in a uniform way into buckets
+     * @param tasks
+     * @param numberOfBuckets
+     * @return
+     */
     public static List<Queue<Task>> splitList(List<Task> tasks, Integer numberOfBuckets) {
         Integer chunckSize = tasks.size()/numberOfBuckets;
         int remainder = (numberOfBuckets % tasks.size());
