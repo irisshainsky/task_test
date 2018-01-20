@@ -1,3 +1,10 @@
+package distance;
+
+import distance.Point;
+
+/**
+ * Represents a task of distance calculation between two points
+ */
 public class Task {
     private Point point1;
     private Point point2;
@@ -38,11 +45,10 @@ public class Task {
         return point2;
     }
 
-    public Result calculateDistance() {
+    public double calculateDistance() {
         double xdistance = point1.getxValue()-point2.getxValue();
         double ydistance = point1.getyValue()-point2.getyValue();
 
-        double distance =  Math.sqrt(Math.pow(xdistance,2)+Math.pow(ydistance,2));
-        return new Result(distance,firstIndex,secondIndex);
+        return  Math.sqrt(Math.pow(xdistance,2)+Math.pow(ydistance,2));
     }
 }

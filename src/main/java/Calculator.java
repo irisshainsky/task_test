@@ -1,10 +1,25 @@
+import distance.BucketGenerator;
+import distance.DistanceExecuter;
+import distance.Point;
+import distance.Task;
+
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
 
 public class Calculator {
 
-    public double[][] calcDistances(List<Point> points,Integer threadNum) {
+    /**
+     * main method: splits all points calculations into buckets and then submit each bucket to a thread for it to calculate,
+     * the result matrix is updated in each thread although this is not thread safe since only one thread will handle a certain calculation
+     * so there is no situation where more than one thread will update a certain value (beside the distance(point<x,x>) which is always 0)
+     * @param points
+     * @param threadNum
+     * @return
+     */
+
+    public double[][] calcDistances(List<Point> points, Integer threadNum) {
         if(threadNum<=0 || threadNum==null) {
             throw new RuntimeException("ThreadNum parameter should be a poisitive integer >= 1");
         }
@@ -18,30 +33,22 @@ public class Calculator {
 
         final CountDownLatch latch = new CountDownLatch(threadNum);
 
-        List<Task> tasks = TaskGenerator.generateTasks(points);
-        List<Queue<Task>> buckets = TasksSplitter.splitList(tasks,threadNum);
-        Queue<Result> resultQueue = new ConcurrentLinkedQueue<Result>();
+        List<Queue<Task>> buckets = BucketGenerator.generateTasks(points,threadNum);
 
+        double[][] resultsMatrix = new double[points.size()][points.size()];
+
+        ExecutorService threads = Executors.newFixedThreadPool(threadNum);
+
+        List<DistanceExecuter> callables = new LinkedList<>();
         for (int i = 0; i < threadNum; i++) {
-            DistanceExecuter runnable = new DistanceExecuter(buckets.get(i),resultQueue, latch);
-            Thread newThread = new Thread(runnable);
-            newThread.setDaemon(true);
-            newThread.start();
+            DistanceExecuter callable = new DistanceExecuter(buckets.get(i),resultsMatrix);
+            callables.add(callable);
         }
 
         try {
-            latch.await();
+            threads.invokeAll(callables);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-
-        double[][] resultsMatrix = new double[points.size()][points.size()];
-        while(!resultQueue.isEmpty()) {
-            Result currentRes = resultQueue.poll();
-            resultsMatrix[currentRes.getFirstIndex()][currentRes.getSecondIndex()] = currentRes.getReuslt();
-            resultsMatrix[currentRes.getSecondIndex()][currentRes.getFirstIndex()] = currentRes.getReuslt();
-            resultsMatrix[currentRes.getFirstIndex()][currentRes.getFirstIndex()] = 0;
-            resultsMatrix[currentRes.getSecondIndex()][currentRes.getSecondIndex()] = 0;
         }
         return resultsMatrix;
     }

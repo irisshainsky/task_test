@@ -1,3 +1,5 @@
+package distance;
+
 public class Point {
     private Integer xValue;
     private Integer yValue;
