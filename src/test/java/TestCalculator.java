@@ -3,8 +3,6 @@ import helpers.AssertMultiDimentionalDoubleArray;
 import helpers.NaiveTester;
 import org.junit.Test;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,16 +13,12 @@ public class TestCalculator {
     public void testCalculator() {
         List<Point> points = generatePoints(1000);
 
-        Instant beforeFirst = Instant.now();
         Calculator calculator = new Calculator();
         double[][] resultMatrix = calculator.calcDistances(points, 10);
         int len = resultMatrix.length;
 
-        Instant afterFirst = Instant.now();
-
         NaiveTester naiveTester = new NaiveTester();
         double[][] expected = naiveTester.calcDistances(points);
-        Instant end = Instant.now();
 
         AssertMultiDimentionalDoubleArray.assertArrayEquals(expected, resultMatrix);
     }
